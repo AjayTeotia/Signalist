@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 
 import {
@@ -14,7 +15,12 @@ import { InputField } from "@/components/forms/input-field";
 import { SelectField } from "@/components/forms/select-field";
 import { Button } from "@/components/ui/button";
 
+import { signUpWithEmail } from "@/lib/actions/auth.action";
+import { toast } from "sonner";
+
 export default function SignUpPage() {
+  const router = useRouter();
+
   const {
     register,
     handleSubmit,
@@ -35,9 +41,17 @@ export default function SignUpPage() {
 
   async function onSubmit(data: SignUpFormData) {
     try {
-      console.log(data);
-    } catch (error) {
-      console.error(error);
+      const result = await signUpWithEmail(data);
+      if (result.success) {
+        toast.success("Sign up successful");
+        router.push("/");
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error("Sign up failed", {
+        description:
+          e instanceof Error ? e.message : "Failed to create an account.",
+      });
     }
   }
 
