@@ -1,9 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
+
 import { NavItems } from "./nav-items";
 import { UserDropDown } from "./user-dropdown";
 
-export function Header() {
+export function Header({ user }: { user: User }) {
   return (
     <div className="sticky top-0 header">
       <div className="container header-wrapper">
@@ -23,7 +24,7 @@ export function Header() {
         </nav>
 
         {/* user dropdown */}
-        <UserDropDown />
+        <UserDropDown user={user} />
       </div>
     </div>
   );
