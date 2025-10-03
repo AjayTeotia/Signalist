@@ -28,7 +28,7 @@ export async function Header({ user }: { user: User }) {
         </nav>
 
         {/* user dropdown */}
-        <UserDropDown user={user} />
+        <UserDropDown user={user} initialStocks={initialStocks} />
       </div>
     </div>
   );
