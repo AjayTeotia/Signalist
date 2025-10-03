@@ -262,6 +262,9 @@
   .watchlist-empty-container {
     @apply container gap-8 flex-col items-center md:mt-10 p-6 text-center;
   }
+  .watchlist-empty-wrapper{
+    @apply flex flex-col items-center justify-center text-center;
+  }
   .watchlist-empty {
     @apply flex flex-col items-center justify-center text-center;
   }
