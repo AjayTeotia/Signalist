@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Loader2, TrendingUp } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
+import { Button } from "@/components/ui/button";
 import {
   CommandDialog,
   CommandEmpty,
@@ -11,19 +12,18 @@ import {
   CommandList,
 } from "@/components/ui/command";
 
-import { Button } from "@/components/ui/button";
-
-import { searchStocks } from "@/lib/actions/finnhub.actions";
 import { useDebounce } from "@/hooks/use-debounce";
+import { searchStocks } from "@/lib/actions/finnhub.actions";
+import { WatchlistButton } from "./watchlist-button";
 
 export function SearchCommand({
   renderAs = "button",
   label = "Add stock",
   initialStocks,
 }: SearchCommandProps) {
-  const [open, setOpen] = useState<boolean>(false);
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
+  const [open, setOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(false);
   const [stocks, setStocks] =
     useState<StockWithWatchlistStatus[]>(initialStocks);
 
@@ -67,6 +67,15 @@ export function SearchCommand({
     setStocks(initialStocks);
   }
 
+  // Update local stock list after watchlist toggle
+  const handleWatchlistChange = (symbol: string, isAdded: boolean) => {
+    setStocks((prev) =>
+      prev.map((stock) =>
+        stock.symbol === symbol ? { ...stock, isInWatchlist: isAdded } : stock
+      )
+    );
+  };
+
   return (
     <>
       {renderAs === "text" ? (
@@ -107,28 +116,40 @@ export function SearchCommand({
           ) : (
             <ul>
               <div className="search-count">
-                {isSearchMode ? "Search results" : "Popular stocks"}
-                {` `}({displayStocks?.length || 0})
+                {isSearchMode ? "Search results" : "Popular stocks"} (
+                {displayStocks?.length || 0})
               </div>
 
               {displayStocks?.map((stock) => (
-                <li key={stock.symbol} className="search-item">
+                <li
+                  key={stock.symbol}
+                  className="search-item flex items-center justify-between"
+                >
+                  {/* Left side clickable link */}
                   <Link
                     href={`/stocks/${stock.symbol}`}
                     onClick={handleSelectStock}
-                    className="search-item-link"
+                    className="flex flex-1 items-center gap-2 search-item-link"
                   >
                     <TrendingUp className="h-4 w-4 text-gray-500" />
 
-                    <div className="flex-1">
+                    <div>
                       <div className="search-item-name">{stock.name}</div>
 
                       <div className="text-sm text-gray-500">
                         {stock.symbol} | {stock.exchange} | {stock.type}
                       </div>
                     </div>
-                    {/*<Star />*/}
                   </Link>
+
+                  {/* Right side: Watchlist button (doesn't trigger navigation) */}
+                  <WatchlistButton
+                    symbol={stock.symbol}
+                    company={stock.name}
+                    isInWatchlist={stock.isInWatchlist}
+                    onWatchlistChange={handleWatchlistChange}
+                    type="icon"
+                  />
                 </li>
               ))}
             </ul>
